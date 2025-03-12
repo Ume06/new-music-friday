@@ -8,12 +8,11 @@ require('dotenv').config();
 const app = express();
 
 // -- Spotify config (replace with your real values) --
-const client_id = process.env.CLIENT_ID;
-const client_secret = process.env.CLIENT_SECRET;
-const redirect_uri = 'http://127.0.0.1:8080/callback';
-var stored_access_token = ''
+const clientId = process.env.CLIENT_ID;
+const clientSecret = process.env.CLIENT_SECRET;
+const redirectUri = 'http://127.0.0.1:8080/callback';
+var storedAccessToken
 
-// 1) Route to initiate Spotify login
 app.get('/login', function (req, res) {
 	var state = generateRandomString(16);
 	var scope =
@@ -23,15 +22,14 @@ app.get('/login', function (req, res) {
 		'https://accounts.spotify.com/authorize?' +
 			querystring.stringify({
 				response_type: 'code',
-				client_id: client_id,
+				client_id: clientId,
 				scope: scope,
-				redirect_uri: redirect_uri,
+				redirect_uri: redirectUri,
 				state: state,
 			})
 	);
 });
 
-// 2) Callback route for Spotify to redirect back to
 app.get('/callback', (req, res) => {
 	var code = req.query.code || null;
 	var state = req.query.state || null;
@@ -48,13 +46,13 @@ app.get('/callback', (req, res) => {
 			url: 'https://accounts.spotify.com/api/token',
 			form: {
 				code: code,
-				redirect_uri: redirect_uri,
+				redirect_uri: redirectUri,
 				grant_type: 'authorization_code',
 			},
 			headers: {
 				'content-type': 'application/x-www-form-urlencoded',
 				Authorization:
-					'Basic ' + new Buffer.from(client_id + ':' + client_secret).toString('base64'),
+					'Basic ' + new Buffer.from(clientId + ':' + clientSecret).toString('base64'),
 			},
 			json: true,
 		};
@@ -65,7 +63,7 @@ app.get('/callback', (req, res) => {
 				const accessToken = body.access_token;
 				const refreshToken = body.refresh_token;
 
-                stored_access_token = accessToken
+                storedAccessToken = accessToken
 				// For a production app, store these tokens in a session, DB, etc.
 				// This example just logs them.
 				console.log('access_token:', accessToken);
@@ -85,17 +83,11 @@ app.get('/callback', (req, res) => {
 	}
 });
 
-// 3) Example API endpoint for fetching user profile from Spotify
-//    (server calls Spotify using stored tokens)
 app.get('/my-profile', (req, res) => {
-	// In a real app, you'd retrieve the access token from session/storage
-	// For this demo, assume we have an access token from somewhere:
-	const accessToken = stored_access_token; // <-- replace or retrieve properly
-
 	request.get(
 		{
 			url: 'https://api.spotify.com/v1/me',
-			headers: { Authorization: 'Bearer ' + accessToken },
+			headers: { Authorization: 'Bearer ' + storedAccessToken },
 			json: true,
 		},
 		(error, response, body) => {
