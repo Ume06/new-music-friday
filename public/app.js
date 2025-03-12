@@ -2,6 +2,7 @@ new Vue({
 	el: '#app',
 	data: {
 		profile: null,
+        songs: null,
 	},
 	methods: {
 		login() {
@@ -9,7 +10,6 @@ new Vue({
 			window.location.href = '/login';
 		},
 		getProfile() {
-			// Our Express route that returns user profile from Spotify
 			fetch('/my-profile')
 				.then((response) => response.json())
 				.then((data) => {
@@ -23,6 +23,7 @@ new Vue({
                 .then((data) => {
                     this.songs = data;
                 })
+                .catch((err) => console.error(err))
         }
 	},
 });

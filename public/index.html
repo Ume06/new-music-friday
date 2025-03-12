@@ -15,12 +15,12 @@
       </div>
       <div v-if="songs">
         <ul>
-            <li v-for="song in songs">
-                <h4>{{ song.name }}</h4>
-                <p>By: {{ song.artists.map(artist => artist.name).join(', ') }}</p>
-                <img v-if="song.images.length" :src="song.images[0].url" alt="Album Cover" width="100">
+            <li v-for="track in songs.tracks" :key="track.id">
+              <img :src="track.album.images[0].url" :alt="track.album.name" width="100" />
+              <h3>{{ track.name }}</h3>
+              <p>Artist: {{ track.artists[0].name }}</p>
             </li>
-        </ul>
+          </ul>
       </div>
     </div>
 
