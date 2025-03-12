@@ -14,7 +14,6 @@ new Vue({
 				.then((response) => response.json())
 				.then((data) => {
 					this.profile = data;
-                    console.log(data)
 				})
 				.catch((err) => console.error(err));
 		},
@@ -22,8 +21,7 @@ new Vue({
             fetch('/songs')
                 .then((response) => response.json())
                 .then((data) => {
-                    this.albums = data;
-                    console.log(data)
+                    this.songs = data;
                 })
         }
 	},

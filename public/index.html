@@ -8,9 +8,19 @@
     <div id="app">
       <button @click="login">Login with Spotify</button>
       <button @click="getProfile">Get Profile</button>
+      <button @click="getSongs">Display Songs</button>
       <div v-if="profile">
         <h2>{{ profile.display_name }}</h2>
         <img :src="profile.images[0].url" alt="Avatar" />
+      </div>
+      <div v-if="songs">
+        <ul>
+            <li v-for="song in songs">
+                <h4>{{ song.name }}</h4>
+                <p>By: {{ song.artists.map(artist => artist.name).join(', ') }}</p>
+                <img v-if="song.images.length" :src="song.images[0].url" alt="Album Cover" width="100">
+            </li>
+        </ul>
       </div>
     </div>
 

@@ -2,18 +2,19 @@ const express = require('express');
 const path = require('path');
 const request = require('request'); // or axios/fetch if you prefer
 const querystring = require('querystring');
-const crypto = require('crypto')
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
+const port = 8080;
 
-// -- Spotify config (replace with your real values) --
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
-const redirectUri = 'http://127.0.0.1:8080/callback';
-var storedAccessToken
+const redirectUri = process.env.REDIRECT_URI;
+var storedAccessToken;
+var storedRefreshToken;
 
-app.get('/login', function (req, res) {
+app.get('/login', (req, res) => {
 	var state = generateRandomString(16);
 	var scope =
 		'user-read-private user-read-email user-modify-playback-state user-read-playback-state';
@@ -51,25 +52,18 @@ app.get('/callback', (req, res) => {
 			},
 			headers: {
 				'content-type': 'application/x-www-form-urlencoded',
-				Authorization:
-					'Basic ' + new Buffer.from(clientId + ':' + clientSecret).toString('base64'),
+				Authorization: 'Basic ' + new Buffer.from(clientId + ':' + clientSecret).toString('base64'),
 			},
 			json: true,
 		};
 
 		request.post(authOptions, function (error, response, body) {
 			if (!error && response.statusCode === 200) {
-				// body contains access_token, refresh_token, etc.
 				const accessToken = body.access_token;
 				const refreshToken = body.refresh_token;
 
-                storedAccessToken = accessToken
-				// For a production app, store these tokens in a session, DB, etc.
-				// This example just logs them.
-				console.log('access_token:', accessToken);
-				console.log('refresh_token:', refreshToken);
-
-				// Redirect user back to your front-end (index.html) or a "/dashboard" page
+				storedAccessToken = accessToken;
+				storedRefreshToken = refreshToken;
 				res.redirect('/');
 			} else {
 				res.redirect(
@@ -84,38 +78,44 @@ app.get('/callback', (req, res) => {
 });
 
 app.get('/my-profile', (req, res) => {
-	request.get(
-		{
-			url: 'https://api.spotify.com/v1/me',
-			headers: { Authorization: 'Bearer ' + storedAccessToken },
-			json: true,
-		},
-		(error, response, body) => {
-			if (!error && response.statusCode === 200) {
-				// 'body' has user profile info
-				res.json(body);
-			} else {
-				res.status(400).json({ error: 'Unable to fetch user profile' });
-			}
+	options = {
+		url: 'https://api.spotify.com/v1/me',
+		headers: { Authorization: 'Bearer ' + storedAccessToken },
+		json: true,
+	};
+	request.get(options, (error, response, body) => {
+		if (!error && response.statusCode === 200) {
+			res.json(body);
+		} else {
+			res.status(400).json({ error: 'Unable to fetch user profile' });
 		}
-	);
+	});
 });
 
-app.get('/songs')
+app.get('/songs', (req, res) => {
+    options = {
+        url: '',
+        headers: { Authorization: 'Bearer' + storedAccessToken },
+        body: {},
+        json: true
+    }
+    request.get(options, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+			res.json(body);
+		} else {
+			res.status(400).json({ error: 'Unable to fetch user profile' });
+		}
+    })
+});
 
-// 4) Serve static files from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 5) Explicitly serve index.html at the root
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// (Optional) catch-all or other routes can be placed here
-
-// Start the server
-app.listen(8080, () => {
-	console.log('Server is running on http://localhost:8080');
+app.listen(port, () => {
+	console.log(`Server is running on ${redirectUri}:${port}`);
 });
 
 const generateRandomString = (length) => {
