@@ -94,10 +94,10 @@ app.get('/my-profile', (req, res) => {
 	});
 });
 
-app.get('/songs', (req, res) => {
+app.get('/tracks', (req, res) => {
 	const music = getMusic();
 	options = {
-		url: 'https://api.spotify.com/v1/tracks?ids=' + music.songs,
+		url: 'https://api.spotify.com/v1/tracks?ids=' + music.tracks,
 		headers: { Authorization: 'Bearer ' + storedAccessToken },
 		json: true,
 	};
@@ -109,6 +109,23 @@ app.get('/songs', (req, res) => {
 		}
 	});
 });
+
+app.get('/albums', (req, res) => {
+	const music = getMusic();
+	options = {
+		url: 'https://api.spotify.com/v1/albums?ids=' + music.albums,
+		headers: { Authorization: 'Bearer ' + storedAccessToken },
+		json: true,
+	};
+	request.get(options, (error, response, body) => {
+		if (!error && response.statusCode === 200) {
+			res.json(body);
+		} else {
+			res.status(400).json({ error: 'Unable to fetch user profile' });
+		}
+	});
+});
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -146,10 +163,10 @@ const getMusic = () => {
 			albumQueryString += album;
 		});
 
-		return { songs: songQueryString, albums: albumQueryString };
+		return { tracks: songQueryString, albums: albumQueryString };
 	} catch (error) {
 		console.error('Error reading data file:', error);
-		return { songs: '', albums: '' }; // Return empty structure on error
+		return { tracks: '', albums: '' }; // Return empty structure on error
 	}
 };
 

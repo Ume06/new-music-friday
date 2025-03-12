@@ -2,7 +2,8 @@ new Vue({
 	el: '#app',
 	data: {
 		profile: null,
-        songs: null,
+        tracks: null,
+        albums: null,
 	},
 	methods: {
 		login() {
@@ -17,13 +18,20 @@ new Vue({
 				})
 				.catch((err) => console.error(err));
 		},
-        getSongs() {
-            fetch('/songs')
-                .then((response) => response.json())
-                .then((data) => {
-                    this.songs = data;
-                })
-                .catch((err) => console.error(err))
-        }
+		getMusic() {
+			fetch('/tracks')
+				.then((response) => response.json())
+				.then((data) => {
+					this.tracks = data;
+				})
+				.catch((err) => console.error(err));
+
+			fetch('/albums')
+				.then((response) => response.json())
+				.then((data) => {
+					this.albums = data;
+				})
+				.catch((err) => console.error(err));
+		},
 	},
 });
