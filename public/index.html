@@ -1,43 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<title>Spotify Vue Demo</title>
-	</head>
-	<body>
-		<div id="app">
-			<button v-if="!loggedin" @click="login">Login with Spotify</button>
-			<button @click="getProfile">Get Profile</button>
-			<button @click="getMusic">Display Songs</button>
-			<div v-if="profile">
-				<h2>{{ profile.display_name }}</h2>
-				<img :src="profile.images[0].url" alt="Avatar" />
-			</div>
-			<div v-if="tracks">
-				<h2>Tracks</h2>
-				<ul>
-					<li v-for="track in tracks.tracks" :key="track.id">
-						<button @click="playMusic(track.id, 'track')"> <img :src="track.album.images[0].url" :alt="track.album.name" width="100" /> </button>
-						<h3>{{ track.name }}</h3>
-						<p>Artist: {{ track.artists[0].name }}</p>
-					</li>
-				</ul>
-			</div>
-			<div v-if="albums">
-				<h2>Albums</h2>
-				<ul>
-					<li v-for="album in albums.albums" :key="album.id">
-						<button @click="playMusic(album.id, 'album')"> <img :src="album.images[0].url" :alt="album.name" width="100" /> </button>
-						<h3>{{ album.name }}</h2>
-						<p>Artist: {{ album.artists.map(artist => artist.name).join(", ") }}</p>
-					</li>
-				</ul>
-			</div>
-		</div>
 
-		<!-- Vue from CDN -->
-		<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-		<!-- Our app.js code -->
-		<script src="app.js"></script>
-	</body>
+<head>
+	<meta charset="UTF-8" />
+	<title>Spotify Vue Demo</title>
+</head>
+
+<body>
+	<div id="app">
+		<button v-if="!loggedin" @click="login">Login with Spotify</button>
+
+		<div v-if="profile">
+			<h2>Welcome, {{ profile.display_name }}</h2>
+		</div>
+		<button v-if="loggedin" @click="getMusic">Display Songs</button>
+		<div v-if="tracks">
+			<h2>Tracks</h2>
+			<ul>
+				<li v-for="track in tracks.tracks" :key="track.id">
+					<button @click="playMusic(track.id, 'track')"> <img :src="track.album.images[0].url"
+							:alt="track.album.name" width="100" /> </button>
+					<h3>{{ track.name }}</h3>
+					<p>Artist: {{ track.artists[0].name }}</p>
+				</li>
+			</ul>
+		</div>
+		<div v-if="albums">
+			<h2>Albums</h2>
+			<ul>
+				<li v-for="album in albums.albums" :key="album.id">
+					<button @click="playMusic(album.id, 'album')"> <img :src="album.images[0].url" :alt="album.name"
+							width="100" /> </button>
+					<h3>{{ album.name }}</h2>
+						<p>Artist: {{ album.artists.map(artist => artist.name).join(", ") }}</p>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Vue from CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+	<!-- Our app.js code -->
+	<script src="app.js"></script>
+</body>
+
 </html>

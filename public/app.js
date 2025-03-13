@@ -8,24 +8,28 @@ new Vue({
 	},
 	methods: {
 		login() {
-			// This hits the /login route in Express, which redirects to Spotify
-			// window.location.href = '/login';
 			fetch('/login')
 				.then(response => response.json())
 				.then(data => {
 					if (data.url) {
 						const loginWindow = window.open(data.url, "_blank", "width=500,height=700");
-
-						const interval = setInterval(() => {
-							if (loginWindow.closed) {
-								clearInterval(interval);
-								location.reload();
+		
+						window.addEventListener("message", (event) => {
+							if (event.origin !== window.location.origin) return; // Security check
+		
+							if (event.data.status === "success") {
+								console.log("Login successful!");
+								this.loggedin = true;
+								
+								// Fetch profile data after login
+								this.getProfile();
+							} else {
+								console.error("Login failed");
 							}
-						}, 1000);
+						});
 					}
 				})
 				.catch(error => console.error("Login error:", error));
-
 		},
 		getProfile() {
 			fetch('/my-profile')

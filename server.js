@@ -39,10 +39,12 @@ app.get('/callback', (req, res) => {
     var state = req.query.state || null;
 
     if (state === null) {
-        res.redirect(
-            '/#' +
-            querystring.stringify({ error: 'state_mismatch' })
-        );
+        res.send(`
+            <script>
+                window.opener.postMessage("spotify-auth-failed", window.location.origin);
+                window.close();
+            </script>
+        `);
     } else {
         var authOptions = {
             url: 'https://accounts.spotify.com/api/token',
@@ -66,10 +68,13 @@ app.get('/callback', (req, res) => {
                 storedAccessToken = accessToken;
                 storedRefreshToken = refreshToken;
 
-                // Send a script to close the popup and refresh the parent window
+                // Send message to parent window to update Vue data
                 res.send(`
                     <script>
-                        window.opener.postMessage("spotify-auth-success", window.location.origin);
+                        window.opener.postMessage(
+                            { status: "success", accessToken: "${accessToken}" },
+                            window.location.origin
+                        );
                         window.close();
                     </script>
                 `);
@@ -84,6 +89,7 @@ app.get('/callback', (req, res) => {
         });
     }
 });
+
 app.get('/my-profile', (req, res) => {
 	options = {
 		url: 'https://api.spotify.com/v1/me',
