@@ -33,5 +33,15 @@ new Vue({
 				})
 				.catch((err) => console.error(err));
 		},
+        playMusic(albumID, type) {
+            const query = '/playMusic?type=' + type + '&id=' + albumID
+            fetch(query)
+                .then((response) => response.json())
+                .then((data) => {
+                    if(data.url.len > 1) {
+                        open(data.url, '_blank')
+                    }
+                })
+        },
 	},
 });

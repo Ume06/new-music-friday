@@ -15,6 +15,7 @@
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
     "querystring": "^0.2.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "window": "^4.2.7"
   }
 }

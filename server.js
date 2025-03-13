@@ -4,6 +4,7 @@ const request = require('request'); // or axios/fetch if you prefer
 const querystring = require('querystring');
 const crypto = require('crypto');
 const fs = require('fs');
+const window = require('window')
 require('dotenv').config();
 
 const app = express();
@@ -126,6 +127,34 @@ app.get('/albums', (req, res) => {
 	});
 });
 
+app.get('/playMusic', (req, res) => {
+	let type = req.query.type;
+	let id = req.query.id;
+	options = {
+		url: 'https://api.spotify.com/v1/me/player/devices',
+		headers: { Authorization: 'Bearer ' + storedAccessToken },
+		json: true,
+	};
+	request.get(options, (error, response, body) => {
+		body.devices.forEach((device) => {
+			if (device.is_active) {
+				options.url = `https://api.spotify.com/v1/me/player/play?devciceid=${device.id}`;
+				if (type == 'track') {
+					options.body = { uris: [`spotify:${type}:${id}`] };
+				} else if (type == 'album') {
+					options.body = { context_uri: `spotify:${type}:${id}` };
+				}
+				request.put(options, (error, response, body) => {
+                    res.status(200).send()
+                });
+                return;
+			} else {
+				url = `spotify:${type}:${id}`
+                res.status(200).send({url: url})
+			}
+		});
+	});
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -156,7 +185,7 @@ const getMusic = () => {
 			songQueryString += song;
 		});
 
-		rawData.albums.forEach(album => {
+		rawData.albums.forEach((album) => {
 			if (albumQueryString.length > 1) {
 				albumQueryString += ',';
 			}
