@@ -38,10 +38,11 @@ new Vue({
             fetch(query)
                 .then((response) => response.json())
                 .then((data) => {
-                    if(data.url.len > 1) {
-                        open(data.url, '_blank')
+                    if(data.url.length > 1) {
+                        open(data.url, "_blank", "noopener,noreferrer");
                     }
                 })
+				.catch((err) => console.error(err));
         },
 	},
 });

@@ -24,13 +24,13 @@ app.get('/login', (req, res) => {
 
 	res.redirect(
 		'https://accounts.spotify.com/authorize?' +
-			querystring.stringify({
-				response_type: 'code',
-				client_id: clientId,
-				scope: scope,
-				redirect_uri: redirectUri,
-				state: state,
-			})
+		querystring.stringify({
+			response_type: 'code',
+			client_id: clientId,
+			scope: scope,
+			redirect_uri: redirectUri,
+			state: state,
+		})
 	);
 });
 
@@ -41,9 +41,9 @@ app.get('/callback', (req, res) => {
 	if (state === null) {
 		res.redirect(
 			'/#' +
-				querystring.stringify({
-					error: 'state_mismatch',
-				})
+			querystring.stringify({
+				error: 'state_mismatch',
+			})
 		);
 	} else {
 		var authOptions = {
@@ -71,9 +71,9 @@ app.get('/callback', (req, res) => {
 			} else {
 				res.redirect(
 					'/#' +
-						querystring.stringify({
-							error: 'invalid_token',
-						})
+					querystring.stringify({
+						error: 'invalid_token',
+					})
 				);
 			}
 		});
@@ -136,23 +136,38 @@ app.get('/playMusic', (req, res) => {
 		json: true,
 	};
 	request.get(options, (error, response, body) => {
-		body.devices.forEach((device) => {
+		let found = false;
+		let selectedDevice = null;
+
+		for (const device of body.devices) {
 			if (device.is_active) {
-				options.url = `https://api.spotify.com/v1/me/player/play?devciceid=${device.id}`;
-				if (type == 'track') {
-					options.body = { uris: [`spotify:${type}:${id}`] };
-				} else if (type == 'album') {
-					options.body = { context_uri: `spotify:${type}:${id}` };
-				}
-				request.put(options, (error, response, body) => {
-                    res.status(200).send()
-                });
-                return;
-			} else {
-				url = `spotify:${type}:${id}`
-                res.status(200).send({url: url})
+				selectedDevice = device;
+				break;
 			}
-		});
+		}
+
+		if (!selectedDevice && body.devices.length > 0) {
+			selectedDevice = body.devices[0];
+		}
+
+		// If we found a device, send the play request
+		if (selectedDevice) {
+			options.url = `https://api.spotify.com/v1/me/player/play?device_id=${selectedDevice.id}`;
+
+			if (type === 'track') {
+				options.body = { uris: [`spotify:${type}:${id}`] };
+			} else if (type === 'album') {
+				options.body = { context_uri: `spotify:${type}:${id}` };
+			}
+
+			request.put(options, (error, response, body) => {
+				res.status(200).send();
+			});
+		} else {
+			url = `spotify:${type}:${id}`
+			console.log(url)
+			res.status(200).send({ url: url })
+		}
 	});
 });
 
