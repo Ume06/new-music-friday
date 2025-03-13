@@ -1,0 +1,136 @@
+/* General Styling */
+body {
+    background-color: #121212; /* Spotify dark background */
+    color: white;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Center the App */
+#app {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #181818; /* Slightly lighter than body */
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Buttons */
+button {
+    background-color: #1DB954; /* Spotify green */
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #1ed760; /* Slightly brighter green */
+    transform: scale(1.05);
+}
+
+/* Profile Section */
+h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* 🎵 Album & Track Images (Square with Rounded Corners, No Border) */
+.album-cover {
+    position: relative;
+    width: 100px;  /* Fixed size */
+    height: 100px; /* Square shape */
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Make images fit within the square, properly aligned */
+.album-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures images stay centered & not distorted */
+    border-radius: 12px;
+}
+
+/* 🎵 Play Button Overlay on Hover */
+.album-cover .play-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(30, 215, 96, 0.7); /* Green with opacity */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;  /* Initially hidden */
+    transition: opacity 0.3s ease;
+    border-radius: 12px;
+}
+
+/* Play Icon */
+.album-cover .play-button::before {
+    content: '▶';  /* Play icon */
+    font-size: 40px;
+    color: white;
+}
+
+/* Show Play Button on Hover */
+.album-cover:hover .play-button {
+    opacity: 1;
+}
+
+/* Song List */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #282828;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 8px 0;
+    transition: background 0.3s;
+}
+
+li:hover {
+    background: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    #app {
+        width: 90%;
+        padding: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+    }
+
+    li {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .album-cover {
+        width: 80px;
+        height: 80px;
+    }
+}

@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Spotify Vue Demo</title>
+	<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -18,8 +19,10 @@
 			<h2>Tracks</h2>
 			<ul>
 				<li v-for="track in tracks.tracks" :key="track.id">
-					<button @click="playMusic(track.id, 'track')"> <img :src="track.album.images[0].url"
-							:alt="track.album.name" width="100" /> </button>
+					<div class="album-cover" @click="playMusic(track.id, 'track')">
+						<img :src="track.album.images[0].url" :alt="track.album.name" />
+						<div class="play-button"></div>
+					</div>
 					<h3>{{ track.name }}</h3>
 					<p>Artist: {{ track.artists[0].name }}</p>
 				</li>
@@ -29,10 +32,12 @@
 			<h2>Albums</h2>
 			<ul>
 				<li v-for="album in albums.albums" :key="album.id">
-					<button @click="playMusic(album.id, 'album')"> <img :src="album.images[0].url" :alt="album.name"
-							width="100" /> </button>
-					<h3>{{ album.name }}</h2>
-						<p>Artist: {{ album.artists.map(artist => artist.name).join(", ") }}</p>
+					<div class="album-cover" @click="playMusic(album.id, 'album')">
+						<img :src="album.images[0].url" :alt="album.name" />
+						<div class="play-button"></div>
+					</div>
+					<h3>{{ album.name }}</h3>
+					<p>Artist: {{ album.artists.map(artist => artist.name).join(', ') }}</p>
 				</li>
 			</ul>
 		</div>
