@@ -38,7 +38,7 @@ To start the Express server, use the following command:
 node server.js
 ```
 
-By default, the server should run on **http://localhost:3000/** (or another port if specified in the code).
+By default, the server should run on **http://localhost:8080/** (or another port if specified in the code).
 
 ## Project Structure
 
@@ -54,13 +54,6 @@ new-music-friday-dev/
 │-- music.json         # JSON data file for music releases
 │-- .gitignore         # Git ignore rules
 ```
-
-## Additional Commands
-
-- **Start the server in development mode** (if `nodemon` is installed):
-  ```sh
-  npx nodemon server.js
-  ```
 
 ## License
 
