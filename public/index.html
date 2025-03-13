@@ -15,7 +15,7 @@
 			<img v-if="profile && profile.images.length > 0" :src="profile.images[0].url" alt="User Profile"
 				class="profile-image">
 		</div>
-		<button v-if="loggedin" @click="getMusic">Display Songs</button>
+
 		<div v-if="tracks">
 			<h2>Tracks</h2>
 			<ul>
@@ -29,6 +29,7 @@
 				</li>
 			</ul>
 		</div>
+
 		<div v-if="albums">
 			<h2>Albums</h2>
 			<ul>

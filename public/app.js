@@ -15,14 +15,13 @@ new Vue({
 						const loginWindow = window.open(data.url, "_blank", "width=500,height=700");
 		
 						window.addEventListener("message", (event) => {
-							if (event.origin !== window.location.origin) return; // Security check
+							if (event.origin !== window.location.origin) return;
 		
 							if (event.data.status === "success") {
 								console.log("Login successful!");
 								this.loggedin = true;
-								
-								// Fetch profile data after login
-								this.getProfile();
+								this.getProfile(); // Fetch profile data
+								this.getMusic();   // Fetch tracks and albums
 							} else {
 								console.error("Login failed");
 							}
