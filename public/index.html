@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<div id="app">
-			<button @click="login">Login with Spotify</button>
+			<button v-if="!loggedin" @click="login">Login with Spotify</button>
 			<button @click="getProfile">Get Profile</button>
 			<button @click="getMusic">Display Songs</button>
 			<div v-if="profile">
