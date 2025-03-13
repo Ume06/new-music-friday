@@ -18,58 +18,58 @@ var storedRefreshToken;
 
 app.get('/login', (req, res) => {
 	var state = generateRandomString(16);
-    var scope =
-        'user-read-private user-read-email user-modify-playback-state user-read-playback-state';
+	var scope =
+		'user-read-private user-read-email user-modify-playback-state user-read-playback-state';
 
-    const authUrl =
-        'https://accounts.spotify.com/authorize?' +
-        querystring.stringify({
-            response_type: 'code',
-            client_id: clientId,
-            scope: scope,
-            redirect_uri: redirectUri,
-            state: state,
-        });
+	const authUrl =
+		'https://accounts.spotify.com/authorize?' +
+		querystring.stringify({
+			response_type: 'code',
+			client_id: clientId,
+			scope: scope,
+			redirect_uri: redirectUri,
+			state: state,
+		});
 
-    res.json({ url: authUrl }); // Send JSON response with URL
+	res.json({ url: authUrl }); // Send JSON response with URL
 });
 
 app.get('/callback', (req, res) => {
-    var code = req.query.code || null;
-    var state = req.query.state || null;
+	var code = req.query.code || null;
+	var state = req.query.state || null;
 
-    if (state === null) {
-        res.send(`
+	if (state === null) {
+		res.send(`
             <script>
                 window.opener.postMessage("spotify-auth-failed", window.location.origin);
                 window.close();
             </script>
         `);
-    } else {
-        var authOptions = {
-            url: 'https://accounts.spotify.com/api/token',
-            form: {
-                code: code,
-                redirect_uri: redirectUri,
-                grant_type: 'authorization_code',
-            },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded',
-                Authorization: 'Basic ' + new Buffer.from(clientId + ':' + clientSecret).toString('base64'),
-            },
-            json: true,
-        };
+	} else {
+		var authOptions = {
+			url: 'https://accounts.spotify.com/api/token',
+			form: {
+				code: code,
+				redirect_uri: redirectUri,
+				grant_type: 'authorization_code',
+			},
+			headers: {
+				'content-type': 'application/x-www-form-urlencoded',
+				Authorization: 'Basic ' + new Buffer.from(clientId + ':' + clientSecret).toString('base64'),
+			},
+			json: true,
+		};
 
-        request.post(authOptions, function (error, response, body) {
-            if (!error && response.statusCode === 200) {
-                const accessToken = body.access_token;
-                const refreshToken = body.refresh_token;
+		request.post(authOptions, function (error, response, body) {
+			if (!error && response.statusCode === 200) {
+				const accessToken = body.access_token;
+				const refreshToken = body.refresh_token;
 
-                storedAccessToken = accessToken;
-                storedRefreshToken = refreshToken;
+				storedAccessToken = accessToken;
+				storedRefreshToken = refreshToken;
 
-                // Send message to parent window to update Vue data
-                res.send(`
+				// Send message to parent window to update Vue data
+				res.send(`
                     <script>
                         window.opener.postMessage(
                             { status: "success", accessToken: "${accessToken}" },
@@ -78,16 +78,16 @@ app.get('/callback', (req, res) => {
                         window.close();
                     </script>
                 `);
-            } else {
-                res.send(`
+			} else {
+				res.send(`
                     <script>
                         window.opener.postMessage("spotify-auth-failed", window.location.origin);
                         window.close();
                     </script>
                 `);
-            }
-        });
-    }
+			}
+		});
+	}
 });
 
 app.get('/my-profile', (req, res) => {
@@ -107,35 +107,47 @@ app.get('/my-profile', (req, res) => {
 
 app.get('/tracks', (req, res) => {
 	const music = getMusic();
-	options = {
-		url: 'https://api.spotify.com/v1/tracks?ids=' + music.tracks,
-		headers: { Authorization: 'Bearer ' + storedAccessToken },
-		json: true,
-	};
-	request.get(options, (error, response, body) => {
-		if (!error && response.statusCode === 200) {
-			res.json(body);
-		} else {
-			res.status(400).json({ error: 'Unable to fetch user profile' });
-		}
-	});
+	if (music.tracks.length < 1) {
+		return res.status(404).json({ error: 'No albums found' });
+	} else {
+		options = {
+			url: 'https://api.spotify.com/v1/tracks?ids=' + music.tracks,
+			headers: { Authorization: 'Bearer ' + storedAccessToken },
+			json: true,
+		};
+		request.get(options, (error, response, body) => {
+			if (!error && response.statusCode === 200) {
+				res.json(body);
+			} else {
+				res.status(400).json({ error: 'Unable to fetch user profile' });
+			}
+		});
+	}
 });
 
 app.get('/albums', (req, res) => {
 	const music = getMusic();
-	options = {
-		url: 'https://api.spotify.com/v1/albums?ids=' + music.albums,
-		headers: { Authorization: 'Bearer ' + storedAccessToken },
-		json: true,
-	};
-	request.get(options, (error, response, body) => {
-		if (!error && response.statusCode === 200) {
-			res.json(body);
-		} else {
-			res.status(400).json({ error: 'Unable to fetch user profile' });
-		}
-	});
+	if (music.albums.length < 1) {
+		return res.status(404).json({ error: 'No albums found' });
+	} else {
+		options = {
+			url: 'https://api.spotify.com/v1/albums?ids=' + music.albums,
+			headers: { Authorization: 'Bearer ' + storedAccessToken },
+			json: true,
+		};
+		request.get(options, (error, response, body) => {
+			if (!error && response.statusCode === 200) {
+				res.json(body);
+			} else {
+				res.status(400).json({ error: 'Unable to fetch user profile' });
+			}
+		});
+	}
 });
+
+app.get('/music', (req, res) => {
+
+})
 
 app.get('/playMusic', (req, res) => {
 	let type = req.query.type;
@@ -175,7 +187,6 @@ app.get('/playMusic', (req, res) => {
 			});
 		} else {
 			url = `spotify:${type}:${id}`
-			console.log(url)
 			res.status(200).send({ url: url })
 		}
 	});
@@ -203,20 +214,20 @@ const getMusic = () => {
 		var songQueryString = '';
 		var albumQueryString = '';
 
-		rawData.songs.forEach((song) => {
-			if (songQueryString.length > 1) {
-				songQueryString += ',';
+		rawData.music.forEach((spotifyRef) => {
+			item = extractSpotifyId(spotifyRef)
+			if (item.type == 'track') {
+				if (songQueryString.length > 1) {
+					songQueryString += ',';
+				}
+				songQueryString += item.id
+			} else if (item.type == 'album') {
+				if (albumQueryString.length > 1) {
+					albumQueryString += ',';
+				}
+				albumQueryString += item.id
 			}
-			songQueryString += song;
 		});
-
-		rawData.albums.forEach((album) => {
-			if (albumQueryString.length > 1) {
-				albumQueryString += ',';
-			}
-			albumQueryString += album;
-		});
-
 		return { tracks: songQueryString, albums: albumQueryString };
 	} catch (error) {
 		console.error('Error reading data file:', error);
@@ -235,7 +246,7 @@ const extractSpotifyId = (spotifyUrl) => {
 			const id = pathSegments[2].split('?')[0]; // Remove parameters if any
 
 			if (type === 'track' || type === 'album') {
-				return id;
+				return { type: type, id: id };
 			} else {
 				throw new Error('Invalid Spotify link type. Only track and album links are supported.');
 			}

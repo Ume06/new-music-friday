@@ -42,16 +42,22 @@ new Vue({
 			fetch('/tracks')
 				.then((response) => response.json())
 				.then((data) => {
-					this.tracks = data;
+					if(!data.hasOwnProperty("error")) this.tracks = data;
 				})
-				.catch((err) => console.error(err));
+				.catch((err) => {
+					console.error(err)
+					this.album = null;
+		}		);
 
 			fetch('/albums')
 				.then((response) => response.json())
 				.then((data) => {
-					this.albums = data;
+					if(!data.hasOwnProperty("error")) this.albums = data;
 				})
-				.catch((err) => console.error(err));
+				.catch((err) => {
+					console.error(err)
+					this.album = null;
+		}		);
 		},
 		playMusic(albumID, type) {
 			const query = '/playMusic?type=' + type + '&id=' + albumID
