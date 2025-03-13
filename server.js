@@ -7,6 +7,8 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
+app.use(express.json());
+
 const port = 8080;
 
 const clientId = process.env.CLIENT_ID;
@@ -192,10 +194,63 @@ app.get('/playMusic', (req, res) => {
 	});
 });
 
+app.get('/music.json', (req, res) => {
+    res.sendFile(path.join(__dirname, 'music.json'));
+});
+
+app.post('/add-track', (req, res) => {
+    try {
+        const newTrack = req.body.track; // Expecting a single track URL
+        if (typeof newTrack !== 'string') {
+            return res.status(400).json({ error: "Invalid track format. Expected a string." });
+        }
+
+        const rawData = fs.readFileSync('./music.json');
+        const musicData = JSON.parse(rawData);
+        if (!musicData.music.includes(newTrack)) {
+            musicData.music.push(newTrack);
+            fs.writeFileSync('./music.json', JSON.stringify(musicData, null, 2));
+            return res.json({ success: true, message: "Track added successfully!" });
+        }
+
+        res.json({ success: false, message: "Track already exists." });
+    } catch (error) {
+        console.error("Error updating music.json:", error);
+        res.status(500).json({ error: "Failed to update music file." });
+    }
+});
+
+app.post('/remove-track', (req, res) => {
+    try {
+        const trackToRemove = req.body.track;
+        if (typeof trackToRemove !== 'string') {
+            return res.status(400).json({ error: "Invalid track format. Expected a string." });
+        }
+
+        const rawData = fs.readFileSync('./music.json');
+        const musicData = JSON.parse(rawData);
+        const updatedMusic = musicData.music.filter(track => track !== trackToRemove);
+
+        if (updatedMusic.length === musicData.music.length) {
+            return res.json({ success: false, message: "Track not found in the list." });
+        }
+
+        fs.writeFileSync('./music.json', JSON.stringify({ music: updatedMusic }, null, 2));
+        res.json({ success: true, message: "Track removed successfully!" });
+    } catch (error) {
+        console.error("Error updating music.json:", error);
+        res.status(500).json({ error: "Failed to update music file." });
+    }
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/update', (req, res) => {
+	res.sendFile(path.join(__dirname, 'public', 'manage.html'));
 });
 
 app.listen(port, () => {

@@ -39,7 +39,9 @@ button:hover {
 
 /* Profile Section */
 h2 {
+    text-align: left;
     font-size: 24px;
+    margin-left: 20px;
     margin-bottom: 10px;
 }
 
@@ -128,6 +130,24 @@ li:hover {
 /* Hover Effect (Optional) */
 .profile-image:hover {
     transform: scale(1.1); /* Slight zoom effect */
+}
+
+input[type="text"] {
+    width: calc(100% - 24px);
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #1DB954;
+    border-radius: 25px;
+    background-color: #181818;
+    color: white;
+    outline: none;
+    text-align: center;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #1ed760;
 }
 
 /* Responsive Design */
