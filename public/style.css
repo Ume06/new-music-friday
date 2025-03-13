@@ -112,6 +112,24 @@ li:hover {
     background: #333;
 }
 
+/* User Profile Image in Top-Right Corner */
+.profile-image {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 50px; /* Adjust size as needed */
+    height: 50px;
+    border-radius: 50%; /* Makes it a circle */
+    object-fit: cover; /* Ensures the image fits properly */
+    border: 2px solid #1DB954; /* Optional Spotify green border */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hover Effect (Optional) */
+.profile-image:hover {
+    transform: scale(1.1); /* Slight zoom effect */
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
     #app {
@@ -133,4 +151,5 @@ li:hover {
         width: 80px;
         height: 80px;
     }
+    
 }

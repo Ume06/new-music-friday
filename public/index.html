@@ -12,7 +12,8 @@
 		<button v-if="!loggedin" @click="login">Login with Spotify</button>
 
 		<div v-if="profile">
-			<h2>Welcome, {{ profile.display_name }}</h2>
+			<img v-if="profile && profile.images.length > 0" :src="profile.images[0].url" alt="User Profile"
+				class="profile-image">
 		</div>
 		<button v-if="loggedin" @click="getMusic">Display Songs</button>
 		<div v-if="tracks">
