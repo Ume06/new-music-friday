@@ -1,10 +1,10 @@
-const express = require('express');
-const path = require('path');
-const request = require('request'); // or axios/fetch if you prefer
-const querystring = require('querystring');
-const crypto = require('crypto');
-const fs = require('fs');
-require('dotenv').config();
+const express = require("express");
+const path = require("path");
+const request = require("request"); // or axios/fetch if you prefer
+const querystring = require("querystring");
+const crypto = require("crypto");
+const fs = require("fs");
+require("dotenv").config();
 
 const app = express();
 app.use(express.json());
@@ -13,29 +13,30 @@ const port = 8080;
 
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
-const redirectUri = 'http://localhost:8080/callback';
+const redirectUri = "http://localhost:8080/callback";
 
 var storedAccessToken;
 var storedRefreshToken;
 
-app.get('/login', (req, res) => {
+app.get("/login", (req, res) => {
   var state = generateRandomString(16);
-  var scope = 'user-read-private user-read-email user-modify-playback-state user-read-playback-state';
+  var scope =
+    "user-read-private user-read-email user-modify-playback-state user-read-playback-state";
 
   const authUrl =
-    'https://accounts.spotify.com/authorize?' +
+    "https://accounts.spotify.com/authorize?" +
     querystring.stringify({
-      response_type: 'code',
+      response_type: "code",
       client_id: clientId,
       scope: scope,
       redirect_uri: redirectUri,
-      state: state,
+      state: state
     });
 
-  res.json({ url: authUrl }); // Send JSON response with URL
+  res.json({url: authUrl}); // Send JSON response with URL
 });
 
-app.get('/callback', (req, res) => {
+app.get("/callback", (req, res) => {
   var code = req.query.code || null;
   var state = req.query.state || null;
 
@@ -48,17 +49,19 @@ app.get('/callback', (req, res) => {
         `);
   } else {
     var authOptions = {
-      url: 'https://accounts.spotify.com/api/token',
+      url: "https://accounts.spotify.com/api/token",
       form: {
         code: code,
         redirect_uri: redirectUri,
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code"
       },
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-        Authorization: 'Basic ' + new Buffer.from(clientId + ':' + clientSecret).toString('base64'),
+        "content-type": "application/x-www-form-urlencoded",
+        Authorization:
+          "Basic " +
+          new Buffer.from(clientId + ":" + clientSecret).toString("base64")
       },
-      json: true,
+      json: true
     };
 
     request.post(authOptions, function (error, response, body) {
@@ -91,70 +94,70 @@ app.get('/callback', (req, res) => {
   }
 });
 
-app.get('/my-profile', (req, res) => {
+app.get("/my-profile", (req, res) => {
   options = {
-    url: 'https://api.spotify.com/v1/me',
-    headers: { Authorization: 'Bearer ' + storedAccessToken },
-    json: true,
+    url: "https://api.spotify.com/v1/me",
+    headers: {Authorization: "Bearer " + storedAccessToken},
+    json: true
   };
   request.get(options, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       res.json(body);
     } else {
-      res.status(400).json({ error: 'Unable to fetch user profile' });
+      res.status(400).json({error: "Unable to fetch user profile"});
     }
   });
 });
 
-app.get('/tracks', (req, res) => {
+app.get("/tracks", (req, res) => {
   const music = getMusic();
   if (music.tracks.length < 1) {
-    return res.status(404).json({ error: 'No albums found' });
+    return res.status(404).json({error: "No albums found"});
   } else {
     options = {
-      url: 'https://api.spotify.com/v1/tracks?ids=' + music.tracks,
-      headers: { Authorization: 'Bearer ' + storedAccessToken },
-      json: true,
+      url: "https://api.spotify.com/v1/tracks?ids=" + music.tracks,
+      headers: {Authorization: "Bearer " + storedAccessToken},
+      json: true
     };
     request.get(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         res.json(body);
       } else {
-        res.status(400).json({ error: 'Unable to fetch user profile' });
+        res.status(400).json({error: "Unable to fetch user profile"});
       }
     });
   }
 });
 
-app.get('/albums', (req, res) => {
+app.get("/albums", (req, res) => {
   const music = getMusic();
   if (music.albums.length < 1) {
-    return res.status(404).json({ error: 'No albums found' });
+    return res.status(404).json({error: "No albums found"});
   } else {
     options = {
-      url: 'https://api.spotify.com/v1/albums?ids=' + music.albums,
-      headers: { Authorization: 'Bearer ' + storedAccessToken },
-      json: true,
+      url: "https://api.spotify.com/v1/albums?ids=" + music.albums,
+      headers: {Authorization: "Bearer " + storedAccessToken},
+      json: true
     };
     request.get(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         res.json(body);
       } else {
-        res.status(400).json({ error: 'Unable to fetch user profile' });
+        res.status(400).json({error: "Unable to fetch user profile"});
       }
     });
   }
 });
 
-app.get('/music', (req, res) => {});
+app.get("/music", (req, res) => {});
 
-app.get('/playMusic', (req, res) => {
+app.get("/playMusic", (req, res) => {
   let type = req.query.type;
   let id = req.query.id;
   options = {
-    url: 'https://api.spotify.com/v1/me/player/devices',
-    headers: { Authorization: 'Bearer ' + storedAccessToken },
-    json: true,
+    url: "https://api.spotify.com/v1/me/player/devices",
+    headers: {Authorization: "Bearer " + storedAccessToken},
+    json: true
   };
   request.get(options, (error, response, body) => {
     let found = false;
@@ -175,10 +178,10 @@ app.get('/playMusic', (req, res) => {
     if (selectedDevice) {
       options.url = `https://api.spotify.com/v1/me/player/play?device_id=${selectedDevice.id}`;
 
-      if (type === 'track') {
-        options.body = { uris: [`spotify:${type}:${id}`] };
-      } else if (type === 'album') {
-        options.body = { context_uri: `spotify:${type}:${id}` };
+      if (type === "track") {
+        options.body = {uris: [`spotify:${type}:${id}`]};
+      } else if (type === "album") {
+        options.body = {context_uri: `spotify:${type}:${id}`};
       }
 
       request.put(options, (error, response, body) => {
@@ -186,68 +189,80 @@ app.get('/playMusic', (req, res) => {
       });
     } else {
       url = `spotify:${type}:${id}`;
-      res.status(200).send({ url: url });
+      res.status(200).send({url: url});
     }
   });
 });
 
-app.get('/music.json', (req, res) => {
-  res.sendFile(path.join(__dirname, 'music.json'));
+app.get("/music.json", (req, res) => {
+  res.sendFile(path.join(__dirname, "music.json"));
 });
 
-app.post('/add-track', (req, res) => {
+app.post("/add-track", (req, res) => {
   try {
     const newTrack = req.body.track; // Expecting a single track URL
-    if (typeof newTrack !== 'string') {
-      return res.status(400).json({ error: 'Invalid track format. Expected a string.' });
+    if (typeof newTrack !== "string") {
+      return res
+        .status(400)
+        .json({error: "Invalid track format. Expected a string."});
     }
 
-    const rawData = fs.readFileSync('./music.json');
+    const rawData = fs.readFileSync("./music.json");
     const musicData = JSON.parse(rawData);
     if (!musicData.music.includes(newTrack)) {
       musicData.music.push(newTrack);
-      fs.writeFileSync('./music.json', JSON.stringify(musicData, null, 2));
-      return res.json({ success: true, message: 'Track added successfully!' });
+      fs.writeFileSync("./music.json", JSON.stringify(musicData, null, 2));
+      return res.json({success: true, message: "Track added successfully!"});
     }
 
-    res.json({ success: false, message: 'Track already exists.' });
+    res.json({success: false, message: "Track already exists."});
   } catch (error) {
-    console.error('Error updating music.json:', error);
-    res.status(500).json({ error: 'Failed to update music file.' });
+    console.error("Error updating music.json:", error);
+    res.status(500).json({error: "Failed to update music file."});
   }
 });
 
-app.post('/remove-track', (req, res) => {
+app.post("/remove-track", (req, res) => {
   try {
     const trackToRemove = req.body.track;
-    if (typeof trackToRemove !== 'string') {
-      return res.status(400).json({ error: 'Invalid track format. Expected a string.' });
+    if (typeof trackToRemove !== "string") {
+      return res
+        .status(400)
+        .json({error: "Invalid track format. Expected a string."});
     }
 
-    const rawData = fs.readFileSync('./music.json');
+    const rawData = fs.readFileSync("./music.json");
     const musicData = JSON.parse(rawData);
-    const updatedMusic = musicData.music.filter((track) => track !== trackToRemove);
+    const updatedMusic = musicData.music.filter(
+      (track) => track !== trackToRemove
+    );
 
     if (updatedMusic.length === musicData.music.length) {
-      return res.json({ success: false, message: 'Track not found in the list.' });
+      return res.json({
+        success: false,
+        message: "Track not found in the list."
+      });
     }
 
-    fs.writeFileSync('./music.json', JSON.stringify({ music: updatedMusic }, null, 2));
-    res.json({ success: true, message: 'Track removed successfully!' });
+    fs.writeFileSync(
+      "./music.json",
+      JSON.stringify({music: updatedMusic}, null, 2)
+    );
+    res.json({success: true, message: "Track removed successfully!"});
   } catch (error) {
-    console.error('Error updating music.json:', error);
-    res.status(500).json({ error: 'Failed to update music file.' });
+    console.error("Error updating music.json:", error);
+    res.status(500).json({error: "Failed to update music file."});
   }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.get('/update', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'manage.html'));
+app.get("/update", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "manage.html"));
 });
 
 app.listen(port, () => {
@@ -255,55 +270,58 @@ app.listen(port, () => {
 });
 
 const generateRandomString = (length) => {
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const values = crypto.getRandomValues(new Uint8Array(length));
-  return values.reduce((acc, x) => acc + possible[x % possible.length], '');
+  return values.reduce((acc, x) => acc + possible[x % possible.length], "");
 };
 
 const getMusic = () => {
   try {
-    const rawData = JSON.parse(fs.readFileSync('./music.json'));
-    var songQueryString = '';
-    var albumQueryString = '';
+    const rawData = JSON.parse(fs.readFileSync("./music.json"));
+    var songQueryString = "";
+    var albumQueryString = "";
 
     rawData.music.forEach((spotifyRef) => {
       item = extractSpotifyId(spotifyRef);
-      if (item.type == 'track') {
+      if (item.type == "track") {
         if (songQueryString.length > 1) {
-          songQueryString += ',';
+          songQueryString += ",";
         }
         songQueryString += item.id;
-      } else if (item.type == 'album') {
+      } else if (item.type == "album") {
         if (albumQueryString.length > 1) {
-          albumQueryString += ',';
+          albumQueryString += ",";
         }
         albumQueryString += item.id;
       }
     });
-    return { tracks: songQueryString, albums: albumQueryString };
+    return {tracks: songQueryString, albums: albumQueryString};
   } catch (error) {
-    console.error('Error reading data file:', error);
-    return { tracks: '', albums: '' }; // Return empty structure on error
+    console.error("Error reading data file:", error);
+    return {tracks: "", albums: ""}; // Return empty structure on error
   }
 };
 
 const extractSpotifyId = (spotifyUrl) => {
   try {
     const url = new URL(spotifyUrl);
-    const pathSegments = url.pathname.split('/');
+    const pathSegments = url.pathname.split("/");
 
     // Ensure it's a Spotify link with a valid type (track or album)
-    if (url.hostname.includes('spotify.com') && pathSegments.length >= 3) {
+    if (url.hostname.includes("spotify.com") && pathSegments.length >= 3) {
       const type = pathSegments[1];
-      const id = pathSegments[2].split('?')[0]; // Remove parameters if any
+      const id = pathSegments[2].split("?")[0]; // Remove parameters if any
 
-      if (type === 'track' || type === 'album') {
-        return { type: type, id: id };
+      if (type === "track" || type === "album") {
+        return {type: type, id: id};
       } else {
-        throw new Error('Invalid Spotify link type. Only track and album links are supported.');
+        throw new Error(
+          "Invalid Spotify link type. Only track and album links are supported."
+        );
       }
     } else {
-      throw new Error('Invalid Spotify URL format.');
+      throw new Error("Invalid Spotify URL format.");
     }
   } catch (error) {
     return `Error: ${error.message}`;
