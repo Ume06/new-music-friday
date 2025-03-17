@@ -40,6 +40,12 @@ node server.js
 
 By default, the server should run on **http://localhost:8080/** (or another port if specified in the code).
 
+## Updating Music
+
+The music displayed on the application can be modified from either the [music](music.json) file, or by using the
+```/update``` endpoint. Copy the track or album share URL and either add a new entry in the music file, or add it
+to the file by copying it into the provided box and pressing "Add Music"
+
 ## Project Structure
 
 ```
