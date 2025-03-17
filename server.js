@@ -13,7 +13,7 @@ const port = 8080;
 
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
-const redirectUri = process.env.REDIRECT_URI;
+const redirectUri = "http://localhost:8080/callback";
 
 var storedAccessToken;
 var storedRefreshToken;
