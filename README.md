@@ -57,4 +57,4 @@ new-music-friday-dev/
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
