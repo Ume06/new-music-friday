@@ -12,24 +12,28 @@ Ensure you have the following installed on your system:
 ## Setup
 
 1. **Clone the repository** (if not already downloaded):
+
    ```sh
    git clone https://github.com/your-repo-link.git
    cd new-music-friday-dev
    ```
 
 2. **Install dependencies**:
+
    ```sh
    npm install
    ```
 
 3. **Define environment variable**:
 
-    Use The Spotify developer dashboard to [create an application](https://developer.spotify.com/documentation/web-api/tutorials/getting-started#create-an-app) and get the client_id and client_secret, and configure the callback uri(s) for the project. Define them in the environment as follows: 
+    Use The Spotify developer dashboard to [create an application](https://developer.spotify.com/documentation/web-api/tutorials/getting-started#create-an-app) and get the client_id and client_secret, and configure the callback uri(s) for the project. Define them in the environment as follows:
+
     ```env
     CLIENT_ID=YOUR_CLIENT_SECRET
     CLIENT_SECRET=YOUR_CLIENT_ID
     REDIRECT_URI=YOUR_REDIRECT_URI
     ```
+
 ## Running the Server
 
 To start the Express server, use the following command:
@@ -38,7 +42,7 @@ To start the Express server, use the following command:
 node server.js
 ```
 
-By default, the server should run on **http://localhost:8080/** (or another port if specified in the code).
+By default, the server should run on **<http://localhost:8080/>** (or another port if specified in the code).
 
 ## Updating Music
 
@@ -48,7 +52,7 @@ to the file by copying it into the provided box and pressing "Add Music"
 
 ## Project Structure
 
-```
+```languages.yml
 new-music-friday-dev/
 │-- server.js          # Main Express server file
 │-- package.json       # Project dependencies & scripts
