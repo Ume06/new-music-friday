@@ -1,8 +1,29 @@
+@font-face {
+  font-family: "Gotham Bold";
+  src: url("/fonts/Gotham-Bold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Gotham Light Italic";
+  src: url("/fonts/Gotham-LightItalic.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Gotham Black";
+  src: url("/fonts/Gotham-Black.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* General Styling */
 body {
   background-color: #121212; /* Spotify dark background */
   color: white;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Helvetica Neue", Arial, sans-serif;
   text-align: center;
   margin: 0;
   padding: 0;
@@ -38,13 +59,25 @@ button:hover {
 }
 
 /* Profile Section */
+h1 {
+  font-family: 'Gotham Black';
+}
+
 h2 {
   text-align: left;
   font-size: 24px;
   margin-left: 20px;
   margin-bottom: 10px;
+  font-family: "Gotham Black";
 }
 
+h3 {
+  font-family: "Gotham Bold";
+}
+
+p {
+  font-family: "Gotham Light Italic";
+}
 /* 🎵 Album & Track Images (Square with Rounded Corners, No Border) */
 .album-cover {
   position: relative;
@@ -83,7 +116,7 @@ h2 {
 
 /* Play Icon */
 .album-cover .play-button::before {
-  content: '▶'; /* Play icon */
+  content: "▶"; /* Play icon */
   font-size: 40px;
   color: white;
 }
@@ -94,8 +127,8 @@ h2 {
 }
 
 .info {
-    margin-left: 1em;
-    text-align: left;
+  margin-left: 1em;
+  text-align: left;
 }
 
 /* Song List */
@@ -137,7 +170,7 @@ li:hover {
   transform: scale(1.1); /* Slight zoom effect */
 }
 
-input[type='text'] {
+input[type="text"] {
   width: calc(100% - 24px);
   padding: 12px;
   font-size: 16px;
@@ -151,7 +184,7 @@ input[type='text'] {
   transition: border-color 0.3s ease;
 }
 
-input[type='text']:focus {
+input[type="text"]:focus {
   border-color: #1ed760;
 }
 
