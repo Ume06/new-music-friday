@@ -4,20 +4,19 @@ const request = require("request-promise");
 const querystring = require("querystring");
 const crypto = require("crypto");
 const fs = require("fs");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
-const ip = "10.10.1.184"
+const ip = "10.10.1.184";
 const port = 8080;
 
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
 const redirectUri = `http://${ip}:${port}/callback`;
-
-var storedAccessToken;
-var storedRefreshToken;
 
 app.get("/login", (req, res) => {
   var state = generateRandomString(16);
@@ -70,14 +69,21 @@ app.get("/callback", (req, res) => {
         const accessToken = body.access_token;
         const refreshToken = body.refresh_token;
 
-        storedAccessToken = accessToken;
-        storedRefreshToken = refreshToken;
-
+        res.cookie("spotify_access_token", accessToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict"
+        });
+        res.cookie("spotify_refresh_token", refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict"
+        });
         // Send message to parent window to update Vue data
         res.send(`
                     <script>
                         window.opener.postMessage(
-                            { status: "success", accessToken: "${accessToken}" },
+                            { status: "success" },
                             window.location.origin
                         );
                         window.close();
@@ -96,11 +102,18 @@ app.get("/callback", (req, res) => {
 });
 
 app.get("/my-profile", (req, res) => {
+  const accessToken = req.cookies.spotify_access_token;
+
+  if (!accessToken) {
+    return res.status(401).json({error: "No access token. Please log in."});
+  }
+
   const options = {
     url: "https://api.spotify.com/v1/me",
-    headers: {Authorization: "Bearer " + storedAccessToken},
+    headers: {Authorization: "Bearer " + accessToken},
     json: true
   };
+
   request.get(options, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       res.json(body);
@@ -115,11 +128,13 @@ app.get("/tracks", (req, res) => {
   if (music.tracks.length < 1) {
     return res.status(404).json({error: "No albums found"});
   } else {
+    const accessToken = req.cookies.spotify_access_token;
     const trackRequest = {
       url: "https://api.spotify.com/v1/tracks?ids=" + music.tracks,
-      headers: {Authorization: "Bearer " + storedAccessToken},
+      headers: {Authorization: "Bearer " + accessToken},
       json: true
     };
+
     request.get(trackRequest, async (error, response, body) => {
       if (!error && response.statusCode === 200) {
         res.json(body);
@@ -135,11 +150,13 @@ app.get("/albums", (req, res) => {
   if (music.albums.length < 1) {
     return res.status(404).json({error: "No albums found"});
   } else {
+    const accessToken = req.cookies.spotify_access_token;
     const options = {
       url: "https://api.spotify.com/v1/albums?ids=" + music.albums,
-      headers: {Authorization: "Bearer " + storedAccessToken},
+      headers: {Authorization: "Bearer " + accessToken},
       json: true
     };
+
     request.get(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         res.json(body);
@@ -153,13 +170,15 @@ app.get("/albums", (req, res) => {
 app.get("/playMusic", (req, res) => {
   let type = req.query.type;
   let id = req.query.id;
+
+  const accessToken = req.cookies.spotify_access_token;
   const options = {
     url: "https://api.spotify.com/v1/me/player/devices",
-    headers: {Authorization: "Bearer " + storedAccessToken},
+    headers: {Authorization: "Bearer " + accessToken},
     json: true
   };
+
   request.get(options, (error, response, body) => {
-    let found = false;
     let selectedDevice = null;
 
     for (const device of body.devices) {
