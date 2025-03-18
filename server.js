@@ -72,12 +72,14 @@ app.get("/callback", (req, res) => {
         res.cookie("spotify_access_token", accessToken, {
           httpOnly: true,
           secure: false,
-          sameSite: "strict"
+          sameSite: "strict",
+          maxAge: 60 * 60 * 1000
         });
         res.cookie("spotify_refresh_token", refreshToken, {
           httpOnly: true,
           secure: false,
-          sameSite: "strict"
+          sameSite: "strict",
+          maxAge: 60 * 60 * 1000
         });
         // Send message to parent window to update Vue data
         res.send(`
@@ -273,7 +275,50 @@ app.post("/remove-track", (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, "public")));
+app.get("/refresh-token", async (req, res) => {
+  try {
+    const refreshToken = req.cookies.spotify_refresh_token;
+    if (!refreshToken) {
+      return res
+        .status(401)
+        .json({error: "No refresh token. Please log in again."});
+    }
+
+    const authOptions = {
+      url: "https://accounts.spotify.com/api/token",
+      form: {
+        grant_type: "refresh_token",
+        refresh_token: refreshToken
+      },
+      headers: {
+        Authorization:
+          "Basic " +
+          Buffer.from(clientId + ":" + clientSecret).toString("base64")
+      },
+      json: true
+    };
+
+    const body = await request.post(authOptions);
+
+    if (body.error) {
+      // e.g. invalid_grant if the refresh token is no longer valid
+      return res.status(400).json({error: body.error});
+    }
+
+    // Update the access token cookie
+    res.cookie("spotify_access_token", body.access_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 1000 // 1 hour
+    });
+
+    return res.json({success: true});
+  } catch (error) {
+    console.error("Refresh error:", error);
+    res.status(500).json({error: "Failed to refresh token"});
+  }
+});
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
@@ -282,6 +327,30 @@ app.get("/", (req, res) => {
 app.get("/update", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "manage.html"));
 });
+
+app.get("/check-auth", async (req, res) => {
+  try {
+    const accessToken = req.cookies.spotify_access_token;
+    const refreshToken = req.cookies.spotify_refresh_token;
+
+    if (!accessToken && !refreshToken) {
+      return res.json({authenticated: false});
+    }
+
+    if (!accessToken) {
+      if (!refreshToken) {
+        return res.json({authenticated: false});
+      }
+    }
+
+    return res.json({authenticated: true});
+  } catch (error) {
+    console.error(error);
+    return res.json({authenticated: false});
+  }
+});
+
+app.use(express.static(path.join(__dirname, "public")));
 
 app.listen(port, () => {
   console.log(`Server is running on http://${ip}:${port}`);

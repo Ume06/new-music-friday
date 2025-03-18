@@ -1,3 +1,20 @@
+function fetchWithRefresh(url, options = {}) {
+  return fetch(url, options).then(async (response) => {
+    if (response.status === 401) {
+      // Token is invalid or expired -> attempt to refresh
+      const refreshResponse = await fetch("/refresh_token");
+      if (!refreshResponse.ok) {
+        // The refresh attempt failed, so the user likely needs to log in again
+        throw new Error("Failed to refresh token. Please log in again.");
+      }
+      // After a successful refresh, retry the original request
+      const secondResponse = await fetch(url, options);
+      return secondResponse;
+    }
+    return response;
+  });
+}
+
 new Vue({
   el: "#app",
   data: {
@@ -6,9 +23,25 @@ new Vue({
     albums: null,
     loggedin: false
   },
+  mounted() {
+    fetch("/check-auth")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated) {
+          this.loggedin = true;
+          // If so, fetch profile & music right away
+          this.getProfile();
+          this.getMusic();
+        } else {
+          // If not authenticated, the login button remains visible
+          this.loggedin = false;
+        }
+      })
+      .catch((error) => console.error("Check-auth error:", error));
+  },
   methods: {
     login() {
-      fetch("/login")
+      fetchWithRefresh("/login")
         .then((response) => response.json())
         .then((data) => {
           if (data.url) {
@@ -35,7 +68,7 @@ new Vue({
         .catch((error) => console.error("Login error:", error));
     },
     getProfile() {
-      fetch("/my-profile")
+      fetchWithRefresh("/my-profile")
         .then((response) => response.json())
         .then((data) => {
           this.profile = data;
@@ -43,7 +76,7 @@ new Vue({
         .catch((err) => console.error(err));
     },
     getMusic() {
-      fetch("/tracks")
+      fetchWithRefresh("/tracks")
         .then((response) => response.json())
         .then((data) => {
           if (!data.hasOwnProperty("error")) this.tracks = data;
@@ -53,7 +86,7 @@ new Vue({
           this.album = null;
         });
 
-      fetch("/albums")
+      fetchWithRefresh("/albums")
         .then((response) => response.json())
         .then((data) => {
           if (!data.hasOwnProperty("error")) this.albums = data;
@@ -65,7 +98,7 @@ new Vue({
     },
     playMusic(albumID, type) {
       const query = "/playMusic?type=" + type + "&id=" + albumID;
-      fetch(query)
+      fetchWithRefresh(query)
         .then((response) => response.json())
         .then((data) => {
           if (data.url.length > 1) {
