@@ -93,6 +93,11 @@ h2 {
   opacity: 1;
 }
 
+.info {
+    margin-left: 1em;
+    text-align: left;
+}
+
 /* Song List */
 ul {
   list-style: none;
@@ -102,7 +107,7 @@ ul {
 li {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   background: #282828;
   border-radius: 10px;
   padding: 10px;
