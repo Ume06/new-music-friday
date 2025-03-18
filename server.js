@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const request = require("request"); // or axios/fetch if you prefer
+const request = require("request-promise");
 const querystring = require("querystring");
 const crypto = require("crypto");
 const fs = require("fs");
@@ -9,11 +9,12 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 
+const ip = "10.10.1.184"
 const port = 8080;
 
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
-const redirectUri = "http://localhost:8080/callback";
+const redirectUri = `http://${ip}:${port}/callback`;
 
 var storedAccessToken;
 var storedRefreshToken;
@@ -95,7 +96,7 @@ app.get("/callback", (req, res) => {
 });
 
 app.get("/my-profile", (req, res) => {
-  options = {
+  const options = {
     url: "https://api.spotify.com/v1/me",
     headers: {Authorization: "Bearer " + storedAccessToken},
     json: true
@@ -114,12 +115,12 @@ app.get("/tracks", (req, res) => {
   if (music.tracks.length < 1) {
     return res.status(404).json({error: "No albums found"});
   } else {
-    options = {
+    const trackRequest = {
       url: "https://api.spotify.com/v1/tracks?ids=" + music.tracks,
       headers: {Authorization: "Bearer " + storedAccessToken},
       json: true
     };
-    request.get(options, (error, response, body) => {
+    request.get(trackRequest, async (error, response, body) => {
       if (!error && response.statusCode === 200) {
         res.json(body);
       } else {
@@ -134,7 +135,7 @@ app.get("/albums", (req, res) => {
   if (music.albums.length < 1) {
     return res.status(404).json({error: "No albums found"});
   } else {
-    options = {
+    const options = {
       url: "https://api.spotify.com/v1/albums?ids=" + music.albums,
       headers: {Authorization: "Bearer " + storedAccessToken},
       json: true
@@ -149,12 +150,10 @@ app.get("/albums", (req, res) => {
   }
 });
 
-app.get("/music", (req, res) => {});
-
 app.get("/playMusic", (req, res) => {
   let type = req.query.type;
   let id = req.query.id;
-  options = {
+  const options = {
     url: "https://api.spotify.com/v1/me/player/devices",
     headers: {Authorization: "Bearer " + storedAccessToken},
     json: true
@@ -266,7 +265,7 @@ app.get("/update", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://${ip}:${port}`);
 });
 
 const generateRandomString = (length) => {
@@ -283,7 +282,7 @@ const getMusic = () => {
     var albumQueryString = "";
 
     rawData.music.forEach((spotifyRef) => {
-      item = extractSpotifyId(spotifyRef);
+      const item = extractSpotifyId(spotifyRef);
       if (item.type == "track") {
         if (songQueryString.length > 1) {
           songQueryString += ",";
