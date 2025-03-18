@@ -15,8 +15,8 @@
         <ul>
           <li v-for="track in tracks" :key="track.id">
             <button class="album-cover" @click="openSpotify(track.id, 'track')">
-                <img :src="track.album.images[0].url" :alt="track.name" />
-                <div class="play-button"></div>
+              <img :src="track.album.images[0].url" :alt="track.album.name" />
+              <div class="play-button"></div>
             </button>
             <div class="info">
               <h3>{{ track.name }}</h3>

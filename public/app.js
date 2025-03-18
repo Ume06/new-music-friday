@@ -25,16 +25,8 @@ new Vue({
     },
 
     openSpotify(id, type) {
-      // 1) Attempt to open the native Spotify app:
       const appUri = `spotify:${type}:${id}`;
       window.location.href = appUri;
-
-      // 2) After ~1 second, if the app didn’t open,
-      //    fallback to the web version in a new tab.
-      setTimeout(() => {
-        const webUrl = `https://open.spotify.com/${type}/${id}`;
-        window.open(webUrl, "_blank");
-      }, 1000);
     }
   }
 });
