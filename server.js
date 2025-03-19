@@ -233,7 +233,7 @@ function classify(album) {
   const totalDuration = album.tracks.items.reduce((acc, track) => {
     return acc + (track.duration_ms || 0);
   }, 0);
-  if ((trackCount < 4) && (totalDuration < 30 * 60 * 1000)) return "single";
+  if ((trackCount < 4) && (totalDuration < 30 * 60 * 1000)) return "Single";
   else if ((trackCount < 7) && (totalDuration < 30 * 60 * 1000)) return "EP";
   else return "Album";
 }
