@@ -14,7 +14,7 @@ Ensure you have the following installed on your system:
 1. **Clone the repository** (if not already downloaded):
 
    ```sh
-   git clone https://github.com/your-repo-link.git
+   git clone https://github.com/ume-06/new-music-friday.git
    cd new-music-friday-dev
    ```
 
@@ -31,7 +31,7 @@ Ensure you have the following installed on your system:
     ```env
     CLIENT_ID=YOUR_CLIENT_SECRET
     CLIENT_SECRET=YOUR_CLIENT_ID
-    REDIRECT_URI=YOUR_REDIRECT_URI
+    ADDRESS=YOUR_ADDRESS # Not reqauired
     ```
 
 ## Running the Server
@@ -42,7 +42,7 @@ To start the Express server, use the following command:
 node server.js
 ```
 
-By default, the server should run on **<http://localhost:8080/>** (or another port if specified in the code).
+By default, the server should run on **<http://localhost:80/>** (or another port if specified in the code).
 
 ## Updating Music
 
@@ -54,15 +54,21 @@ to the file by copying it into the provided box and pressing "Add Music"
 
 ```languages.yml
 new-music-friday-dev/
-│-- server.js          # Main Express server file
-│-- package.json       # Project dependencies & scripts
-│-- public/            # Frontend assets (HTML, CSS, JS)
+│-- server.js                       # Main Express server file
+│-- package.json                    # Project dependencies & scripts
+│-- public/                         # Frontend assets (HTML, CSS, JS)
 │   ├── index.html     
-│   ├── manage.html    
+│   ├── update.html    
 │   ├── style.css      
-│   ├── app.js         
-│-- music.json         # JSON data file for music releases
-│-- .gitignore         # Git ignore rules
+|   ├── update.css
+│   ├── app.js   
+|   ├── fonts/                      # Required fonts
+|   |   ├── Gotham-Black.otf 
+|   |   ├── Gotham-Bold.otf 
+|   |   ├── Gotham-LightItalic.otf      
+│-- music.json                      # JSON data file for music releases
+│-- .gitignore                      # Git ignore rules
+|-- .env                            # Environment variables
 ```
 
 ## License
