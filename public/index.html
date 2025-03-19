@@ -10,8 +10,7 @@
     <div id="app">
       <h1>New Music Friday</h1>
 
-      <div v-if="tracks">
-        <h2>Tracks</h2>
+      <div>
         <ul>
           <li v-for="track in tracks" :key="track.id">
             <button class="album-cover" @click="openSpotify(track.id, 'track')">
@@ -19,24 +18,20 @@
               <div class="play-button"></div>
             </button>
             <div class="info">
+              <p class="type">{{ track.type }}</p>
               <h3>{{ track.name }}</h3>
-              <p>{{ track.artists[0].name }}</p>
+              <p>{{ track.artists[0].name }}, {{ track.album.release_date }} </p>
             </div>
           </li>
-        </ul>
-      </div>
-
-      <div v-if="albums">
-        <h2>Albums</h2>
-        <ul>
           <li v-for="album in albums" :key="album.id">
             <button class="album-cover" @click="openSpotify(album.id, 'album')">
                 <img :src="album.images[0].url" :alt="album.name" />
                 <div class="play-button"></div>
             </button>
             <div class="info">
+              <p class="type">{{ album.type }}</p>
               <h3>{{ album.name }}</h3>
-              <p>{{ album.artists.map(a => a.name).join(', ') }}</p>
+              <p>{{ album.artists.map(a => a.name).join(', ') }}, {{ album.release_date }}</p>
             </div>
           </li>
         </ul>

@@ -74,6 +74,9 @@ app.get("/tracks", async (req, res) => {
     };
 
     const body = await request.get(trackRequest);
+    for (let i = 0; i < body.tracks.length; i++) {
+      body.tracks[i].type = classify(body.tracks[i]);
+    }
     return res.json(body);
   } catch (err) {
     console.error("Error in /tracks route:", err);
@@ -101,6 +104,9 @@ app.get("/albums", async (req, res) => {
     };
 
     const body = await request.get(options);
+    for (let i = 0; i < body.albums.length; i++) {
+      body.albums[i].type = classify(body.albums[i]);
+    }
     return res.json(body);
   } catch (err) {
     console.error("Error in /albums route:", err);
@@ -222,6 +228,16 @@ function extractSpotifyId(spotifyUrl) {
   }
 }
 
+function classify(album) {
+  const trackCount = album.total_tracks;
+  const totalDuration = album.tracks.items.reduce((acc, track) => {
+    return acc + (track.duration_ms || 0);
+  }, 0);
+  if ((trackCount < 4) && (totalDuration < 30 * 60 * 1000)) return "single";
+  else if ((trackCount < 7) && (totalDuration < 30 * 60 * 1000)) return "EP";
+  else return "Album";
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 //   Starte server and serve index.html by default
 // ─────────────────────────────────────────────────────────────────────────────
@@ -230,5 +246,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://${address}:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
