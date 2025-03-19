@@ -1,0 +1,171 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   1) Custom Font Imports (same as your main file)
+   ────────────────────────────────────────────────────────────────────────── */
+   @font-face {
+    font-family: "Gotham Bold";
+    src: url("/fonts/Gotham-Bold.otf") format("opentype");
+    font-weight: bold;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Gotham Light Italic";
+    src: url("/fonts/Gotham-LightItalic.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Gotham Black";
+    src: url("/fonts/Gotham-Black.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  /* ──────────────────────────────────────────────────────────────────────────
+     2) Global Styles: Body, Colors, Basic Font
+     ────────────────────────────────────────────────────────────────────────── */
+  body {
+    background-color: #121212; /* Spotify dark background */
+    color: white;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+  
+  /* Center #manageApp in a "panel" */
+  #manageApp {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #181818; /* Slightly lighter than the body */
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* ──────────────────────────────────────────────────────────────────────────
+     3) Headings and Typography
+     ────────────────────────────────────────────────────────────────────────── */
+  h1 {
+    font-family: "Gotham Black";
+    margin-bottom: 1em;
+  }
+  
+  h2 {
+    text-align: left;
+    font-size: 20px;
+    margin-left: 1em;
+    margin-bottom: 0.5em;
+    font-family: "Gotham Black";
+  }
+  
+  small {
+    font-size: 14px;
+    font-family: "Gotham Light Italic";
+  }
+  
+  /* ──────────────────────────────────────────────────────────────────────────
+     4) Form Controls
+     ────────────────────────────────────────────────────────────────────────── */
+  input[type="text"] {
+    width: calc(100% - 24px);
+    padding: 12px;
+    font-size: 14px;
+    border: 2px solid #1db954; /* Spotify green border */
+    border-radius: 25px;
+    background-color: #181818;
+    color: white;
+    outline: none;
+    text-align: center;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus {
+    border-color: #1ed760; /* Lighter green on focus */
+  }
+  
+  /* ──────────────────────────────────────────────────────────────────────────
+     5) Buttons
+     ────────────────────────────────────────────────────────────────────────── */
+  button {
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Green "Add" button (Spotify-like) */
+  .add-button {
+    background-color: #1db954;
+    color: white;
+  }
+  .add-button:hover {
+    background-color: #1ed760;
+  }
+  
+  /* Red "Remove" button */
+  .remove-button {
+    background-color: #d33;
+    color: white;
+  }
+  .remove-button:hover {
+    background-color: #f44;
+  }
+  
+  /* ──────────────────────────────────────────────────────────────────────────
+     6) The Music List and Layout
+     ────────────────────────────────────────────────────────────────────────── */
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Title/artist on left, Remove button on right */
+    background: #282828;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 8px 0;
+    transition: background 0.3s;
+  }
+  li:hover {
+    background: #333;
+  }
+  
+  /* Container for track name + artist */
+  .track-info {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem; /* small spacing */
+    max-width: 80%; /* so the button has space on the right */
+  }
+  
+  /* The dash won't shrink, so keep it separate. */
+  .track-info .dash {
+    flex-shrink: 0;
+  }
+  
+  /* Title and artist each truncated if they get too long */
+  .track-info .title,
+  .track-info .artist {
+    display: inline-block;
+    max-width: 15vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* ──────────────────────────────────────────────────────────────────────────
+     7) Misc
+     ────────────────────────────────────────────────────────────────────────── */
+  .add-section,
+  .music-list {
+    margin-bottom: 1.5em;
+  }
+  

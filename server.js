@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 //    Helper function to request a Client Credentials access token
 // ─────────────────────────────────────────────────────────────────────────────
 async function getClientAccessToken() {
-  const currentTime = Date.now() / 1000; 
+  const currentTime = Date.now() / 1000;
   if (globalAccessToken && currentTime < tokenExpiryTime) {
     return globalAccessToken;
   }
@@ -56,21 +56,20 @@ async function getClientAccessToken() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 //    API to get tracks, based on music.json
-//    This no longer needs to know about user playback devices
 // ─────────────────────────────────────────────────────────────────────────────
 app.get("/tracks", async (req, res) => {
   try {
     const music = getMusic();
     if (!music.tracks) {
-      return res.status(404).json({ error: "No tracks found." });
+      return res.status(404).json({error: "No tracks found."});
     }
 
     const accessToken = await getClientAccessToken();
 
     const trackRequest = {
       url: "https://api.spotify.com/v1/tracks",
-      qs: { ids: music.tracks },
-      headers: { Authorization: `Bearer ${accessToken}` },
+      qs: {ids: music.tracks},
+      headers: {Authorization: `Bearer ${accessToken}`},
       json: true
     };
 
@@ -78,7 +77,7 @@ app.get("/tracks", async (req, res) => {
     return res.json(body);
   } catch (err) {
     console.error("Error in /tracks route:", err);
-    return res.status(500).json({ error: "Failed to fetch tracks." });
+    return res.status(500).json({error: "Failed to fetch tracks."});
   }
 });
 
@@ -89,15 +88,15 @@ app.get("/albums", async (req, res) => {
   try {
     const music = getMusic();
     if (!music.albums) {
-      return res.status(404).json({ error: "No albums found." });
+      return res.status(404).json({error: "No albums found."});
     }
 
     const accessToken = await getClientAccessToken();
 
     const options = {
       url: "https://api.spotify.com/v1/albums",
-      qs: { ids: music.albums },
-      headers: { Authorization: `Bearer ${accessToken}` },
+      qs: {ids: music.albums},
+      headers: {Authorization: `Bearer ${accessToken}`},
       json: true
     };
 
@@ -105,15 +104,79 @@ app.get("/albums", async (req, res) => {
     return res.json(body);
   } catch (err) {
     console.error("Error in /albums route:", err);
-    return res.status(500).json({ error: "Failed to fetch albums." });
+    return res.status(500).json({error: "Failed to fetch albums."});
   }
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-//    Endpoint to serve your local music.json
+//    Endpoint to serve music.json
 // ─────────────────────────────────────────────────────────────────────────────
 app.get("/music.json", (req, res) => {
   res.sendFile(path.join(__dirname, "music.json"));
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+//    Endpoints to manage music.json
+// ─────────────────────────────────────────────────────────────────────────────
+app.get("/update", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "update.html"));
+});
+
+app.post("/add-track", (req, res) => {
+  try {
+    const newTrack = req.body.track; // Expecting a single track URL
+    if (typeof newTrack !== "string") {
+      return res
+        .status(400)
+        .json({error: "Invalid track format. Expected a string."});
+    }
+
+    const rawData = fs.readFileSync("./music.json");
+    const musicData = JSON.parse(rawData);
+    if (!musicData.music.includes(newTrack)) {
+      musicData.music.push(newTrack);
+      fs.writeFileSync("./music.json", JSON.stringify(musicData, null, 2));
+      return res.json({success: true, message: "Track added successfully!"});
+    }
+
+    res.json({success: false, message: "Track already exists."});
+  } catch (error) {
+    console.error("Error updating music.json:", error);
+    res.status(500).json({error: "Failed to update music file."});
+  }
+});
+
+app.post("/remove-track", (req, res) => {
+  try {
+    const trackToRemove = req.body.track;
+    if (typeof trackToRemove !== "string") {
+      return res
+        .status(400)
+        .json({error: "Invalid track format. Expected a string."});
+    }
+
+    const rawData = fs.readFileSync("./music.json");
+    const musicData = JSON.parse(rawData);
+    const updatedMusic = musicData.music.filter(
+      (track) => track !== trackToRemove
+    );
+
+    if (updatedMusic.length === musicData.music.length) {
+      return res.json({
+        success: false,
+        message: "Track not found in the list."
+      });
+    }
+
+    fs.writeFileSync(
+      "./music.json",
+      JSON.stringify({music: updatedMusic}, null, 2)
+    );
+    res.json({success: true, message: "Track removed successfully!"});
+  } catch (error) {
+    console.error("Error updating music.json:", error);
+    res.status(500).json({error: "Failed to update music file."});
+  }
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -134,10 +197,10 @@ function getMusic() {
       }
     });
 
-    return { tracks: tracks.join(","), albums: albums.join(",") };
+    return {tracks: tracks.join(","), albums: albums.join(",")};
   } catch (error) {
     console.error("Error reading music.json:", error);
-    return { tracks: "", albums: "" };
+    return {tracks: "", albums: ""};
   }
 }
 
@@ -150,25 +213,22 @@ function extractSpotifyId(spotifyUrl) {
       urlObj.hostname.includes("spotify.com") &&
       (pathSegments[1] === "track" || pathSegments[1] === "album")
     ) {
-      return { type: pathSegments[1], id: pathSegments[2].split("?")[0] };
+      return {type: pathSegments[1], id: pathSegments[2].split("?")[0]};
     } else {
       throw new Error("Invalid Spotify URL.");
     }
   } catch (error) {
-    return { type: "error", id: "" };
+    return {type: "error", id: ""};
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//    Serve index.html by default
+//   Starte server and serve index.html by default
 // ─────────────────────────────────────────────────────────────────────────────
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-//    Start the server
-// ─────────────────────────────────────────────────────────────────────────────
 app.listen(port, () => {
   console.log(`Server is running on http://${address}:${port}`);
 });

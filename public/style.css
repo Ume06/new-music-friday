@@ -135,40 +135,6 @@ li:hover {
   background: #333;
 }
 
-.profile-image {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #1db954;
-  transition: transform 0.3s ease-in-out;
-}
-
-.profile-image:hover {
-  transform: scale(1.1);
-}
-
-input[type="text"] {
-  width: calc(100% - 24px);
-  padding: 12px;
-  font-size: 16px;
-  border: 2px solid #1db954;
-  border-radius: 25px;
-  background-color: #181818;
-  color: white;
-  outline: none;
-  text-align: center;
-  margin-bottom: 10px;
-  transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus {
-  border-color: #1ed760;
-}
-
 @media (max-width: 600px) {
   #app {
     width: 90%;
