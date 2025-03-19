@@ -148,6 +148,7 @@ if (document.getElementById("manageApp")) {
           .then((res) => res.json())
           .then(() => {
             this.loadTracks();
+            this.loadAlbums();
           })
           .catch((error) => console.error(error));
       }
