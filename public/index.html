@@ -30,7 +30,7 @@
         <h2>Albums</h2>
         <ul>
           <li v-for="album in albums" :key="album.id">
-            <button class="album-cover" @click="openSpotify(track.id, 'album')">
+            <button class="album-cover" @click="openSpotify(album.id, 'album')">
                 <img :src="album.images[0].url" :alt="album.name" />
                 <div class="play-button"></div>
             </button>

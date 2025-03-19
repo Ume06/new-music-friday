@@ -27,6 +27,7 @@ new Vue({
     openSpotify(id, type) {
       const appUri = `spotify:${type}:${id}`;
       window.location.href = appUri;
+      console.log(appUri);
     }
   }
 });
@@ -133,6 +134,7 @@ if (document.getElementById("manageApp")) {
           .then(() => {
             this.singleTrack = "";
             this.loadTracks();
+            this.loadAlbums();
           })
           .catch((error) => console.error(error));
       },
@@ -148,6 +150,7 @@ if (document.getElementById("manageApp")) {
           .then((res) => res.json())
           .then(() => {
             this.loadTracks();
+            this.loadAlbums();
           })
           .catch((error) => console.error(error));
       }
