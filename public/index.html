@@ -10,23 +10,17 @@
     <div id="app">
       <h1>New Music Friday</h1>
 
-      <button v-if="!loggedin" @click="login">Login with Spotify</button>
-
-      <div v-if="profile">
-        <img v-if="profile && profile.images.length > 0" :src="profile.images[0].url" alt="User Profile" class="profile-image" />
-      </div>
-
       <div v-if="tracks">
         <h2>Tracks</h2>
         <ul>
-          <li v-for="track in tracks.tracks" :key="track.id">
-            <div class="album-cover" @click="playMusic(track.id, 'track')">
+          <li v-for="track in tracks" :key="track.id">
+            <button class="album-cover" @click="openSpotify(track.id, 'track')">
               <img :src="track.album.images[0].url" :alt="track.album.name" />
               <div class="play-button"></div>
-            </div>
+            </button>
             <div class="info">
-                <h3>{{ track.name }}</h3>
-                <p>{{ track.artists[0].name }}</p>
+              <h3>{{ track.name }}</h3>
+              <p>{{ track.artists[0].name }}</p>
             </div>
           </li>
         </ul>
@@ -35,23 +29,21 @@
       <div v-if="albums">
         <h2>Albums</h2>
         <ul>
-          <li v-for="album in albums.albums" :key="album.id">
-            <div class="album-cover" @click="playMusic(album.id, 'album')">
-              <img :src="album.images[0].url" :alt="album.name" />
-              <div class="play-button"></div>
-            </div>
+          <li v-for="album in albums" :key="album.id">
+            <button class="album-cover" @click="openSpotify(track.id, 'album')">
+                <img :src="album.images[0].url" :alt="album.name" />
+                <div class="play-button"></div>
+            </button>
             <div class="info">
-                <h3>{{ album.name }}</h3>
-                <p>{{ album.artists.map(artist => artist.name).join(', ') }}</p>
+              <h3>{{ album.name }}</h3>
+              <p>{{ album.artists.map(a => a.name).join(', ') }}</p>
             </div>
           </li>
         </ul>
       </div>
     </div>
 
-    <!-- Vue from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <!-- Our app.js code -->
     <script src="app.js"></script>
   </body>
 </html>

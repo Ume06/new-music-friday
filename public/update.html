@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Manage Music</title>
+    <link rel="stylesheet" href="update.css" />
+  </head>
+  <body>
+    <div id="manageApp">
+      <h1>Manage Music</h1>
+
+      <!-- Single-link add section -->
+      <div class="add-section">
+        <h2>Add Track/Album Link</h2>
+        <input
+          type="text"
+          v-model="singleTrack"
+          placeholder="Paste a Spotify link"
+        />
+        <button class="add-button" @click="addSingleTrack">Add</button>
+      </div>
+
+      <!-- List of Current Tracks -->
+      <div class="music-list">
+        <h2>Current Music</h2>
+        <ul>
+          <li v-for="(track, i) in allTracks" :key="track.id">
+            <div class="track-info">
+              <small class="title">{{ track.name }}</small>
+              <small class="dash"> — </small>
+              <small class="artist">{{ track.artists[0].name }}</small>
+            </div>
+            <button class="remove-button" @click="removeTrack(trackLinks[i])">
+              Remove
+            </button>
+          </li>
+
+          <li v-for="(album, i) in allAlbums" :key="album.id">
+            <div class="track-info">
+              <!-- Same truncated approach for album name and artist(s) -->
+              <small class="title">{{ album.name }}</small>
+              <small class="dash"> — </small>
+              <small class="artist">{{ album.artists[0].name }}</small>
+            </div>
+            <button class="remove-button" @click="removeTrack(albumLinks[i])">
+              Remove
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Vue from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- Use your existing app.js, which includes the main page's Vue and the new update Vue -->
+    <script src="app.js"></script>
+  </body>
+</html>
