@@ -27,6 +27,7 @@ new Vue({
     openSpotify(id, type) {
       const appUri = `spotify:${type}:${id}`;
       window.location.href = appUri;
+      console.log(appUri);
     }
   }
 });
