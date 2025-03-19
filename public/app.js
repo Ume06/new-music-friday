@@ -133,6 +133,7 @@ if (document.getElementById("manageApp")) {
           .then(() => {
             this.singleTrack = "";
             this.loadTracks();
+            this.loadAlbums();
           })
           .catch((error) => console.error(error));
       },
