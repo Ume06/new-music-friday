@@ -135,6 +135,16 @@ li:hover {
   background: #333;
 }
 
+.info .type {
+    font-size: 0.8rem;     /* Make it smaller */
+    margin: 20px 0 3px 0;     /* Remove default margins and add a little bottom space */
+  }
+  
+  .info h3 {
+    margin: 0;             /* Remove the default extra space above/below the heading */
+    font-size: larger;
+  }
+
 @media (max-width: 600px) {
   #app {
     width: 90%;
